@@ -32,9 +32,13 @@ Consult these guides before working on related tasks:
   `#dd295c`, and a pastel tint per project. Keep changes inside that language.
 - **Uppercase is for short display strings only**: names, headlines, labels,
   buttons. Explanatory sentences stay sentence case.
-- **Zero client JavaScript** beyond Astro's prefetcher and the theme toggle in
-  `src/layouts/Base.astro`. Do not add a framework island without a reason
-  that could not be solved in CSS.
+- **Near-zero client JavaScript**: Astro's prefetcher, the theme toggle in
+  `src/layouts/Base.astro`, and `CursorOrb.astro`. Do not add a framework
+  island without a reason that could not be solved in CSS.
+- **Anything decorative must stand down.** The cursor orb is the pattern to
+  copy: it checks `hover: hover`, `pointer: fine`, `prefers-reduced-motion`
+  and `forced-colors` before it touches the native cursor, and it is
+  `pointer-events: none` so it can never intercept a click.
 - **Measure is capped at 65ch** (`--measure`) and must never exceed 76ch.
   This is sourced from Baymard's line-length research and WCAG 1.4.8.
 - **Contrast.** `--ink-3` is the muted floor for body copy (4.9:1 light,

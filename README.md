@@ -19,8 +19,13 @@ npm run preview  # serve the built output
 | Home | ~4.9 kB | ~4.3 kB | 1.1 kB |
 | Case study | ~6.8 kB | ~3.1 kB | 1.1 kB |
 
-The only JavaScript is Astro's link prefetcher plus a ~20-line theme toggle.
-Everything else is HTML and CSS.
+The only JavaScript is Astro's link prefetcher, a ~20-line theme toggle, and
+the cursor orb. Everything else is HTML and CSS.
+
+The orb stands down entirely on touch devices, under `prefers-reduced-motion`,
+and under `forced-colors`, leaving the native cursor untouched. Its core dot
+tracks the true pointer position with no easing, so pointing accuracy is
+unaffected; only the halo trails.
 
 ## Structure
 

@@ -1,0 +1,116 @@
+---
+/**
+ * Custom cursor: a precise core dot at the true pointer position, with a soft
+ * halo that trails behind it and swells over interactive elements.
+ *
+ * It deliberately stands down in three cases:
+ *   - no fine pointer (touch, pen), where there is no cursor to replace;
+ *   - `prefers-reduced-motion`, because people who ask for less motion are
+ *     often the same people who need a predictable, OS-rendered pointer;
+ *   - `forced-colors`, where the OS is already controlling presentation.
+ * In all three the native cursor is left completely alone.
+ *
+ * The core never lags. Only the halo eases, so pointing accuracy is unaffected.
+ */
+---
+<span class="orb-halo" data-orb-halo aria-hidden="true"></span>
+<span class="orb-core" data-orb-core aria-hidden="true"></span>
+
+<style>
+  .orb-core,
+  .orb-halo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;   /* must never eat a click or block a hover */
+    opacity: 0;
+    will-change: transform;
+    transition: opacity 220ms var(--ease);
+  }
+
+  :global(:root.orb-on) .orb-core,
+  :global(:root.orb-on) .orb-halo { opacity: 1; }
+
+  .orb-core {
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .orb-halo {
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--accent) 26%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 12%, transparent) 52%,
+        transparent 72%
+      );
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent) inset;
+  }
+
+  /* Fallback for browsers without color-mix: a flat translucent accent. */
+  @supports not (background: color-mix(in srgb, red 50%, transparent)) {
+    .orb-halo { background: var(--accent-soft); opacity: 0.55; }
+  }
+
+  /* The native cursor is only hidden while the orb is actually running. */
+  :global(:root.orb-on),
+  :global(:root.orb-on *) { cursor: none !important; }
+
+  /* Text still needs a caret, so inputs keep their own cursor. */
+  :global(:root.orb-on input),
+  :global(:root.orb-on textarea) { cursor: text !important; }
+</style>
+
+<script is:inline>
+  (() => {
+    const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const forced = matchMedia('(forced-colors: active)').matches;
+    if (!fine || calm || forced) return;
+
+    const core = document.querySelector('[data-orb-core]');
+    const halo = document.querySelector('[data-orb-halo]');
+    if (!core || !halo) return;
+
+    const HIT = 'a, button, [role="button"], summary, label, input, textarea, select';
+    const root = document.documentElement;
+
+    let mx = innerWidth / 2, my = innerHeight / 2;
+    let hx = mx, hy = my;
+    let scale = 1, want = 1;
+    let on = false;
+
+    const show = () => { if (!on) { on = true; hx = mx; hy = my; root.classList.add('orb-on'); } };
+    const hide = () => { on = false; root.classList.remove('orb-on'); };
+
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      mx = e.clientX; my = e.clientY;
+      show();
+      want = e.target instanceof Element && e.target.closest(HIT) ? 1.85 : 1;
+    }, { passive: true });
+
+    addEventListener('pointerdown', () => { want *= 0.7; }, { passive: true });
+    addEventListener('pointerup', () => { want = want < 1 ? 1 : want; }, { passive: true });
+    addEventListener('blur', hide);
+    document.addEventListener('mouseleave', hide);
+
+    const frame = () => {
+      hx += (mx - hx) * 0.18;
+      hy += (my - hy) * 0.18;
+      scale += (want - scale) * 0.18;
+      core.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+      halo.style.transform = `translate3d(${hx}px, ${hy}px, 0) scale(${scale})`;
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  })();
+</script>
