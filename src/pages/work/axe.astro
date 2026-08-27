@@ -1,0 +1,290 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Figure from '../../components/Figure.astro';
+---
+<CaseStudy slug="axe">
+  <div class="prose">
+    <h2 class="h3">What the platform is</h2>
+    <p>
+      AXE LMS is the web platform for AIENAI's AXE AI and Design Bootcamp, a
+      structured two-week programme that takes learners aged 13 to 19 from zero
+      to a finished app prototype, a live pitch, and a verifiable digital
+      certificate.
+    </p>
+    <p>
+      It serves three roles, Student, Tutor and Org, each with its own
+      interface and feature set, from a single Next.js app with role-based
+      routing. As lead
+      developer I own ticket triage and prioritisation across the build, run a
+      per-screen feature-branch workflow so each screen stays isolated and
+      reviewable, and lead the platform walk-throughs before client demos.
+    </p>
+  </div>
+
+  <Figure
+    src="axe-dashboard"
+    alt="The AXE learner dashboard showing weekly content, progress and assignments."
+    caption="The learner dashboard. Tutors see a structurally different application from the same codebase."
+  />
+
+  <div class="prose">
+    <h2 class="h3">Three roles, one codebase</h2>
+    <p>
+      Student, Tutor and Org are not three permission levels on one screen.
+      They are three different products, routed by role out of a single
+      Next.js app, and the Org layer is what lets the same build serve more
+      than one academy.
+    </p>
+  </div>
+
+  <div class="roles-grid">
+    <div class="role-col">
+      <h3 class="h4">Student</h3>
+      <ul>
+        <li>Guided onboarding and weekly content flow</li>
+        <li>Three-step assignment submission with auto-save</li>
+        <li>Instructor feedback by push and email</li>
+        <li>Practice Mode and presenter checklist</li>
+        <li>Progress tracking and self-assessment</li>
+        <li>QR-verified certificates and portfolio builder</li>
+      </ul>
+    </div>
+    <div class="role-col">
+      <h3 class="h4">Tutor</h3>
+      <ul>
+        <li>Cohort and student management dashboard</li>
+        <li>Content and curriculum management</li>
+        <li>Assignment review and structured feedback</li>
+        <li>Session management and attendance</li>
+        <li>At-risk student flagging</li>
+        <li>Ratings dashboard and certificate issuance</li>
+      </ul>
+    </div>
+    <div class="role-col">
+      <h3 class="h4">Org</h3>
+      <ul>
+        <li>Academy setup, branding and theming</li>
+        <li>Its own subdomain, <code>&lt;slug&gt;.axe.ac</code></li>
+        <li>Membership and tutor access control</li>
+        <li>Cohorts and curriculum across the academy</li>
+        <li>Certificate issuance under the academy's brand</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h2 class="h3">What I measured</h2>
+    <p>
+      Three fixes with a before and after. The first is computed from
+      production data; the other two were measured the same way, minutes
+      apart, so the comparison is like for like.
+    </p>
+
+    <h3 class="h4">A grading queue that overstated its own workload 9×</h3>
+    <p>
+      The staff grading queue counted submission rows. One quiz sitting writes
+      6.7 of them, so the queue read <strong>281 items where 31 pieces of work
+      existed</strong>. For the largest academy it was 250 against 20, a 12.5×
+      overstatement. Staff would have triaged against that number. The bug
+      surfaced as 40 identical feed lines for a single quiz sitting, and the fix
+      was to fold the rows in the read layer rather than count them.
+    </p>
+
+    <h3 class="h4">Sidebar selection: 1.8s to 30ms</h3>
+    <p>
+      Course sidebar tabs ran through <code>router.replace</code>, and the page
+      is an async server component, so the highlight could not move until the
+      server render committed. That was roughly <strong>1.8 seconds of
+      dead-looking interface per click</strong>, plus a full server re-render for
+      a parameter the page never reads. Routing client-only params through
+      <code>history.replaceState</code> with an optimistic overlay brought the
+      highlight to <strong>28 to 38 milliseconds</strong>, with zero server
+      renders in the request log.
+    </p>
+
+    <h3 class="h4">Catalogue: an N+1 collapsed from 3N+2 queries to 4</h3>
+    <p>
+      <code>getMyCoursesProgress</code> issued three queries per course plus
+      two. Collapsing it to four total took application time from
+      <strong>2.3s to 1.44s</strong>, and time to content on client navigation
+      to <strong>599ms</strong>, or 24ms cached.
+    </p>
+    <p class="muted">
+      Method: both latency figures were captured the same way, minutes apart,
+      against the remote database, so the delta is like for like.
+    </p>
+
+    <h2 class="h3">Five decisions worth showing</h2>
+    <p class="muted">
+      Each of these is a place where the obvious implementation would have worked
+      and cost something later.
+    </p>
+
+    <h3 class="h4">1. Lesson Runner: a redesign with no data migration</h3>
+    <p>
+      The authoring schema and the playback schema are different shapes. Tutors
+      author a tri-split of slides, mini-tasks per slide, and a final quiz.
+      Learners read a flat ordered list of <em>beats</em>: story, check, reflect.
+    </p>
+    <p>
+      <code>deriveLessonBeats()</code> is a pure function that interleaves the two
+      models and emits stable ids such as <code>story-&#36;&#123;slideId&#125;</code>,
+      so React keys survive re-render and deep linking works.
+      <code>startSlideId</code> resolves to a beat index by id lookup, falling
+      back to 0 rather than throwing.
+    </p>
+    <blockquote class="pull">
+      I did not migrate the database to fit the new UI. I wrote a derivation
+      layer, so the redesign shipped without a migration and the authoring shape
+      was left free to catch up later.
+    </blockquote>
+  </div>
+
+  <Figure
+    src="axe-lesson-runner"
+    alt="A lesson in progress on AXE, showing beat dots, the status bar and an XP counter."
+    caption="A check beat mid-lesson. Beats are derived at read time, not stored."
+  />
+
+  <div class="prose">
+    <h3 class="h4">2. Lesson Builder: drag and drop without a drag-and-drop library</h3>
+    <p>
+      Reordering happens at three nesting levels: blocks within a slide,
+      mini-tasks within a slide, and slides within a lesson. All of it runs on
+      the native HTML5 drag-and-drop API with a shared generic
+      <code>reorder&lt;T&gt;(list, from, to)</code>, so no DnD library enters the
+      bundle.
+    </p>
+    <p>
+      A single <code>dragRef</code> discriminated union,
+      <code>&#123;kind: 'block' | 'task' | 'slide', fromIndex&#125;</code>, means a
+      block can never be dropped into the slide rail. The type system enforces the
+      drop target rather than a runtime guard. Persistence is debounced at 700ms
+      into a server action, with an in-session history stack driving undo and redo
+      behind a visible history panel.
+    </p>
+  </div>
+
+  <Figure
+    src="axe-lesson-builder"
+    alt="The three-column AXE lesson builder with a slide card being dragged out of the right-hand rail."
+    caption="Mid-drag. Three nesting levels of reordering, no drag-and-drop dependency."
+  />
+
+  <div class="prose">
+    <h3 class="h4">3. AI course import that cannot corrupt a course</h3>
+    <p>
+      The model is constrained by a hand-written JSON Schema covering course
+      tagline, overview sections, lessons, slides and mini-tasks with
+      <code>isCorrect</code> flags, passed as structured output so the response is
+      always parseable.
+    </p>
+    <p>
+      Generated lessons land as <strong>drafts</strong>. The
+      <code>/author</code> endpoint does not touch the database at all: it returns
+      a proposal, and insertion goes back through the builder's existing
+      auth-gated persist actions. The model proposes; the tutor commits.
+    </p>
+  </div>
+
+  <Figure
+    src="axe-ai-import"
+    alt="The AXE author assistant showing generated slides in a preview panel with an Insert button."
+    caption="Generated slides sit in the panel until a tutor inserts them. Nothing is written on the model's say-so."
+  />
+
+  <div class="prose">
+    <h3 class="h4">4. Tenant branding: one codebase, many academies</h3>
+    <p>Three layers, each with a different job.</p>
+    <ul>
+      <li>
+        <code>proxy.ts</code> parses <code>&lt;slug&gt;.axe.ac</code> off the Host
+        header and stamps an <code>active_org</code> cookie.
+      </li>
+      <li>
+        <code>getCurrentTenant()</code> treats that cookie as a <em>hint only</em>.
+        It re-verifies membership against <code>organisation_members</code> on
+        every request, so a spoofed slug resolves to nothing.
+      </li>
+      <li>
+        <code>TenantThemeProvider</code> writes the brand colours onto
+        <code>documentElement</code> as CSS custom properties, with cleanup on
+        unmount so a workspace switch never leaks the previous tenant's palette.
+      </li>
+    </ul>
+  </div>
+
+  <Figure
+    src="axe-tenant-branding"
+    alt="The organisation setup design step in AXE, showing a brand colour picker."
+    caption="The design step of organisation setup. The same dashboard renders under any tenant's palette."
+  />
+
+  <div class="prose">
+    <h3 class="h4">5. Grading queue: auto-marked and human-marked in one view</h3>
+    <p>
+      <code>GradingQuestion</code> is a discriminated union over
+      <code>auto-choice | text | file</code>. Auto-choice arrives with
+      <code>pointsEarned</code> already computed; text and file arrive with only
+      <code>pointsMax</code>. The UI derives the tutor's remaining workload from
+      the type rather than from a flag someone has to remember to set.
+    </p>
+    <p>
+      Reflection responses carry <code>origin: 'reflection'</code> and are
+      filtered out of the queue entirely. They are learner-private, not assessed
+      work.
+    </p>
+  </div>
+
+  <Figure
+    src="axe-grading-queue"
+    alt="The AXE grading queue showing a submission with auto-scored multiple choice and an ungraded free-text answer."
+    caption="One submission, two kinds of marking. The type tells the interface which is which."
+  />
+
+  <div class="prose">
+    <h2 class="h3">Where this stands</h2>
+    <p>
+      AXE is in active development across 605 files and 112,631 lines, with 135
+      row-level security policies doing the tenant isolation. The delivery
+      discipline is the part I would defend hardest: per-screen branches, owned
+      triage, and walk-throughs before every demo, so the platform stays
+      demo-ready at short notice rather than being made presentable in a panic
+      the night before.
+    </p>
+  </div>
+
+  <style>
+    .roles-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--s-6);
+      margin-block: var(--s-6) var(--s-8);
+    }
+    @media (min-width: 44rem) {
+      .roles-grid { grid-template-columns: repeat(2, 1fr); gap: var(--s-6); }
+    }
+    @media (min-width: 68rem) {
+      .roles-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .role-col {
+      padding-top: var(--s-4);
+      border-top: 2px solid var(--ink);
+    }
+    .role-col .h4 { margin-top: 0; margin-bottom: var(--s-3); }
+    .role-col ul { margin-top: 0; }
+
+    .pull {
+      margin: var(--s-7) 0 0;
+      padding: var(--s-5) var(--s-6);
+      border-radius: var(--r-lg);
+      background: var(--tint, var(--paper-2));
+      font-size: var(--t-2);
+      font-weight: var(--w-medium);
+      line-height: 1.35;
+      letter-spacing: var(--ls-tight);
+      color: var(--ink);
+      max-width: 46ch;
+    }
+  </style>
+</CaseStudy>

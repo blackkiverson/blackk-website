@@ -1,0 +1,266 @@
+---
+import Base from '../layouts/Base.astro';
+import Arrow from '../components/Arrow.astro';
+import Cover from '../components/Cover.astro';
+import { site, experience, education, certifications } from '../data/site';
+---
+<Base title="About" description={site.description}>
+  <!-- ---- Intro ---- -->
+  <section class="section section--top">
+    <div class="wrap">
+      <p class="eyebrow eyebrow--muted">About</p>
+      <h1 class="statement about__title">
+        I stopped handing designs over and started shipping them.
+      </h1>
+
+      <div class="about__grid">
+        <div class="prose">
+          <p>
+            I am a product designer and fullstack agentic designer. I take
+            products from research through to shipped builds, and I own the
+            design-to-code loop so that a design system in Figma runs exactly as
+            intended in production.
+          </p>
+          <p>
+            Most of the waste I have seen in product teams sits in the handover.
+            Intent gets written down, passed along, partially understood, and
+            rebuilt approximately. Running design and implementation as one loop,
+            with AI-native tooling doing the repetitive translation, removes that
+            gap rather than managing it.
+          </p>
+          <p>
+            In practice that means I am the person who runs the research session,
+            builds the token set, writes the TypeScript, and pushes the release.
+            I lead delivery on AXE, an LMS, and OutOut, a social events app, and
+            I founded and run Confety, an event-ticketing platform live on iOS,
+            Android and web.
+          </p>
+          <p>
+            I also ran a WCAG 2.1 AA audit for AXE that mapped remediation across
+            the whole codebase, and I hold certifications in UX design and
+            research, and in cybersecurity.
+          </p>
+        </div>
+
+        <aside class="snapshot">
+          <div class="snapshot__portrait">
+            <Cover
+              src="portrait"
+              alt="Samuel Onyebuchi-Igbokwe"
+              ratio="1 / 1"
+              loading="eager"
+              label="Portrait"
+            />
+          </div>
+          <p class="eyebrow eyebrow--muted">Snapshot</p>
+          <ul class="snapshot__list">
+            <li>Shipped to App Store, Play Store and web</li>
+            <li>Owned design systems end to end</li>
+            <li>AI-assisted design-to-code</li>
+            <li>React Native, Flutter, TypeScript</li>
+            <li>WCAG 2.1 AA audit experience</li>
+          </ul>
+          <p class="snapshot__contact">
+            <a class="arrow-link" href={`mailto:${site.email}`}>{site.email}<Arrow /></a>
+            <a class="arrow-link" href="/cv.pdf">CV (PDF)<Arrow /></a>
+          </p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- Experience ---- -->
+  <section class="section" aria-labelledby="exp-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow eyebrow--muted">Experience</p>
+        <h2 class="h2" id="exp-h">Where I have done it.</h2>
+      </div>
+
+      <ol class="roles">
+        {experience.map((r) => (
+          <li class="role">
+            <div class="role__when">
+              <p class="eyebrow eyebrow--muted">{r.period}</p>
+              <p class="role__mode">{r.mode}</p>
+            </div>
+            <div class="role__what">
+              <h3 class="h4 role__title">
+                {r.title}
+                <span class="role__org">
+                  {r.href
+                    ? <a class="link" href={r.href} rel="noopener">{r.org}</a>
+                    : r.org}
+                </span>
+              </h3>
+              <ul class="role__points">
+                {r.points.map((p) => <li>{p}</li>)}
+              </ul>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ---- Education ---- -->
+  <section class="section" aria-labelledby="edu-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow eyebrow--muted">Education</p>
+        <h2 class="h2" id="edu-h">Training.</h2>
+      </div>
+
+      <div class="edu">
+        {education.map((e) => (
+          <div class="edu__item">
+            <h3 class="h4">{e.qualification}</h3>
+            <p class="edu__org">{e.institution}</p>
+            <p class="eyebrow eyebrow--muted">{e.period}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="certs">
+        <p class="eyebrow eyebrow--muted">Certifications</p>
+        <ul class="certs__list">
+          {certifications.map((c) => <li>{c}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- CTA ---- -->
+  <section class="section">
+    <div class="wrap">
+      <hr class="rule" />
+      <div class="about__cta">
+        <h2 class="h2">{site.available}.</h2>
+        <p class="about__cta-links">
+          <a class="arrow-link" href={`mailto:${site.email}`}>{site.email}<Arrow /></a>
+          <a class="arrow-link" href={site.socials[0].href} rel="noopener">LinkedIn<Arrow /></a>
+          <a class="arrow-link" href="/#work">See the work<Arrow /></a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .about__title {
+    margin-block: var(--s-5) var(--s-8);
+    max-width: 24ch;
+    color: var(--ink);
+    font-weight: var(--w-bold);
+  }
+
+  .about__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-7);
+  }
+  @media (min-width: 60rem) {
+    .about__grid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--s-9); align-items: start; }
+  }
+
+  .snapshot {
+    padding: var(--s-5);
+    border-radius: var(--r-xl);
+    background: var(--tint-lavender);
+  }
+  .snapshot__portrait { margin-bottom: var(--s-5); }
+  .snapshot__portrait :global(img),
+  .snapshot__portrait :global(.placeholder) { border-radius: var(--r-md); }
+  .snapshot .eyebrow { margin-bottom: var(--s-4); }
+  .snapshot__list { list-style: none; padding: 0; margin: 0; }
+  .snapshot__list li {
+    padding-block: var(--s-3);
+    border-top: 1px solid rgb(47 47 47 / 0.12);
+    font-size: var(--t--1);
+    line-height: var(--lh-relaxed);
+    color: var(--ink-2);
+  }
+  .snapshot__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: var(--s-4);
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ---- Roles ---- */
+  .roles { list-style: none; padding: 0; margin: 0; }
+  .role {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--rule);
+  }
+  .role:last-child { border-bottom: 1px solid var(--rule); }
+  @media (min-width: 56rem) {
+    .role { grid-template-columns: 14rem 1fr; gap: var(--s-6); }
+  }
+
+  .role__mode { font-size: var(--t--1); color: var(--ink-3); }
+  .role__title { color: var(--ink); }
+  .role__org {
+    display: block;
+    margin-top: var(--s-1);
+    font-size: var(--t--1);
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  .role__points { list-style: none; padding: 0; margin-top: var(--s-4); }
+  .role__points li {
+    position: relative;
+    padding-left: var(--s-5);
+    font-size: var(--t--1);
+    line-height: var(--lh-relaxed);
+    color: var(--ink-2);
+    max-width: var(--measure-wide);
+    text-wrap: pretty;
+  }
+  .role__points li + li { margin-top: var(--s-3); }
+  .role__points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.85em;
+    width: 8px;
+    height: 1px;
+    background: var(--rule-strong);
+  }
+
+  /* ---- Education ---- */
+  .edu {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s-6);
+  }
+  @media (min-width: 44rem) { .edu { grid-template-columns: repeat(2, 1fr); gap: var(--s-7); } }
+  .edu__org { margin-block: var(--s-2) var(--s-1); font-size: var(--t--1); color: var(--ink-2); }
+
+  .certs { margin-top: var(--s-8); padding-top: var(--s-6); border-top: 1px solid var(--rule); }
+  .certs .eyebrow { margin-bottom: var(--s-4); }
+  .certs__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-3);
+  }
+  .certs__list li { font-size: var(--t--1); line-height: var(--lh-relaxed); color: var(--ink-2); }
+
+  /* ---- CTA ---- */
+  .about__cta { padding-top: var(--s-7); }
+  .about__cta-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-6);
+    margin-top: var(--s-5);
+  }
+</style>

@@ -1,0 +1,154 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Figure from '../../components/Figure.astro';
+---
+<CaseStudy slug="confety">
+  <div class="prose">
+    <h2 class="h3">The problem</h2>
+    <p>
+      Nigerian event organisers were selling tickets through bank transfers and
+      WhatsApp threads. That works until the door, where there is no reliable way
+      to tell a paid ticket from a screenshot of one. Organisers absorbed the
+      losses, and attendees queued while someone scrolled a chat history looking
+      for a payment receipt.
+    </p>
+    <p>
+      Confety closes that gap: a ticket that is cryptographically signed when it
+      is sold, and verifiable in a second when it is scanned.
+    </p>
+
+    <h2 class="h3">What I built</h2>
+    <p>
+      I founded the product and lead development end to end. That covers the
+      React Native (Expo) apps for iOS and Android, the React web app, and the
+      Supabase and Postgres backend behind both. Since January 2026 that has
+      been <strong>387 of the project's 394 commits</strong>, 106 database
+      migrations, 15 edge functions and roughly 107,000 lines of TypeScript.
+    </p>
+    <ul>
+      <li>
+        <strong>Signed QR tickets.</strong> Every ticket carries a signature
+        issued at purchase. Verification at the door checks the signature rather
+        than doing a database lookup, so the scanner stays fast and keeps working
+        when the venue's connection does not.
+      </li>
+      <li>
+        <strong>Apple and Google Sign-In.</strong> Account creation is the first
+        thing between a person and a ticket, so it had to be a single tap. Apple
+        Sign-In was also a store requirement, not a preference.
+      </li>
+      <li>
+        <strong>Gifting and private events.</strong> A ticket can be bought for
+        someone else, and an invite link opens the event in the app when it is
+        installed and the web app when it is not, so a shared link never
+        dead-ends.
+      </li>
+      <li>
+        <strong>Payments through Paystack</strong>, including the fee handling
+        described below, which turned out to be where the interesting bug lived.
+      </li>
+      <li>
+        <strong>The full release pipeline.</strong> App Store, Play Store and
+        TestFlight, including review submissions, signing and ongoing
+        maintenance. There is no one else to hand a build to.
+      </li>
+    </ul>
+  </div>
+
+  <Figure
+    src="confety-app"
+    alt="Confety event listings and the ticket purchase flow shown on mobile."
+    caption="Discovery and booking for attendees. Organisers get the mirror of this: ticket creation, door scanning and analytics."
+  />
+
+  <div class="prose">
+    <h2 class="h3">What it has done</h2>
+    <p>
+      Queried from the production database, not estimated.
+    </p>
+    <ul>
+      <li>
+        <strong>₦1,311,013 in ticket value processed</strong> across 161 orders,
+        23 February to 8 August 2026.
+      </li>
+      <li>
+        <strong>57.9% of paying buyers bought again</strong>, 11 of 19, at an
+        average of 6.74 orders each.
+      </li>
+      <li>
+        <strong>21.9% of accounts converted to a paid purchase</strong>, 33 of
+        151.
+      </li>
+      <li>
+        <strong>121 tickets issued, 112 still active.</strong> 43 gifts sent to
+        16 people.
+      </li>
+    </ul>
+
+    <h2 class="h3">Decisions worth showing</h2>
+    <p class="muted">
+      Each of these is a place where the obvious implementation would have
+      worked, and cost something later.
+    </p>
+
+    <h3 class="h4">1. The pricing page was the spec, and the code was wrong</h3>
+    <p>
+      Confety quotes hosts a flat 7% plus ₦100. The code computed the platform's
+      cut as its own rate, which meant three surfaces stated three different
+      fees, and the host's total drifted outside the quoted number whenever
+      Paystack capped or waived its charge. The effect was an
+      <strong>over-deduction of about 1.5% on every transaction</strong>, ₦3,675
+      across 30 orders on ₦245,000 of gross sales.
+    </p>
+    <p>
+      The fix was to stop treating the platform fee as a rate at all. It is now a
+      <em>residual</em>: the host fee minus whatever the processor actually took.
+      Every pricing quirk lands on Confety's margin and never on the host's
+      payout. The tests assert that invariant rather than the two rates, so the
+      property that matters is the thing under test.
+    </p>
+
+    <h3 class="h4">2. A migration avoided by reusing a derivation</h3>
+    <p>
+      Hiding a venue's exact address until someone holds a ticket needed a
+      coarser public label. The obvious route was a <code>public_locality</code>
+      column, a backfill across 40 existing events, and a new field for hosts to
+      fill in.
+    </p>
+    <p>
+      Instead <code>event_public_location_label()</code> composes the existing
+      <code>event_canonical_city()</code>, already powering Discover, with the
+      country parsed off the end of the address. An event resolves to
+      "Abuja, FCT / Nigeria" with no new column, no backfill and nothing asked of
+      the host, and the label agrees with Discover by construction rather than by
+      someone remembering to keep them in step.
+    </p>
+
+    <h3 class="h4">3. The privacy gate lives in the service, not the screens</h3>
+    <p>
+      Checking <code>canSeeExact</code> at each render site would have worked
+      and would have leaked. <code>fetchEventDetail</code> overwrites venue,
+      address and coordinates before it returns, so the calendar export and the
+      session timeline were both gated without either being touched. A
+      per-screen approach would have missed exactly those two.
+    </p>
+
+    <h3 class="h4">4. It fails closed</h3>
+    <p>
+      If the <code>can_see_exact_location</code> RPC errors, the client falls
+      back to hidden rather than visible. An unapplied migration produces
+      over-hidden events, never leaked addresses. The failure mode is
+      embarrassing rather than harmful, which is the correct way round.
+    </p>
+
+    <h3 class="h4">5. The processor's real fee moves margin, never the payout</h3>
+    <p>
+      When Paystack's actual charge differs from the estimate,
+      <code>apply_actual_paystack_fee</code> adjusts Confety's side of the
+      ledger. Recomputing the host's net from the actual fee would have been the
+      natural implementation, and would have meant a host who happened to sell to
+      an overseas buyer quietly received less than they were quoted.
+    </p>
+
+  </div>
+</CaseStudy>

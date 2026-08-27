@@ -1,0 +1,212 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkRow from '../components/WorkRow.astro';
+import Arrow from '../components/Arrow.astro';
+import Cover from '../components/Cover.astro';
+import { featured } from '../data/work';
+import { site, capabilities } from '../data/site';
+---
+<Base>
+  <!-- ================= Hero ================= -->
+  <section class="section section--top">
+    <div class="wrap hero">
+      <div class="hero__text">
+        <p class="eyebrow eyebrow--muted hero__roles">{site.roles.join(' · ')}</p>
+
+        <h1 class="display hero__name">{site.name}</h1>
+
+        <p class="statement hero__statement">
+          I take products <em class="hl">from research through to shipped
+          builds</em>, owning the <em class="hl">design-to-code loop</em> across
+          web, iOS and Android, so what ships is what was designed.
+        </p>
+
+        <div class="hero__foot">
+          <p class="hero__available">
+            <span class="dot" aria-hidden="true"></span>
+            {site.available}
+          </p>
+          <p class="hero__actions">
+            <a class="btn" href="#work">See the work<Arrow /></a>
+            <a class="btn btn--ghost" href={`mailto:${site.email}`}>Get in touch<Arrow /></a>
+          </p>
+        </div>
+      </div>
+
+      <div class="hero__portrait">
+        <Cover src="portrait" alt={site.name} ratio="1 / 1" loading="eager" label="Portrait" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Selected work ================= -->
+  <section class="section" id="work" aria-labelledby="work-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow eyebrow--muted">Case studies</p>
+        <div>
+          <h2 class="h2" id="work-h">Four products, research to release.</h2>
+          <p class="section-head__note">
+            Shipped to the App Store, Play Store and web. Each one leads with
+            what actually moved, not how much was built.
+          </p>
+        </div>
+      </div>
+
+      <div class="work">
+        {featured.map((p, i) => <WorkRow project={p} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= What I do ================= -->
+  <section class="section" aria-labelledby="do-h">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow eyebrow--muted">What I do</p>
+        <div>
+          <h2 class="h2" id="do-h">One person across the whole loop.</h2>
+          <p class="section-head__note">
+            The handover between design and engineering is where intent leaks.
+            I remove the handover.
+          </p>
+        </div>
+      </div>
+
+      <div class="caps">
+        {capabilities.map((c) => (
+          <div class="cap">
+            <h3 class="h4 cap__title">{c.title}</h3>
+            <ul class="cap__list">
+              {c.items.map((i) => <li>{i}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Contact ================= -->
+  <section class="section cta-section" aria-labelledby="contact-h">
+    <div class="wrap">
+      <h2 class="display cta__title" id="contact-h">Let's work together</h2>
+      <div class="cta__grid">
+        <p class="cta__note">
+          {site.available}. Best reached by email: I read everything and reply
+          to anything with a product attached to it.
+        </p>
+        <p class="cta__links">
+          <a class="btn" href={`mailto:${site.email}`}>{site.email}<Arrow /></a>
+          <a class="btn btn--ghost" href={site.socials[0].href} rel="noopener">LinkedIn<Arrow /></a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---- Hero ---- */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+    padding-block: clamp(var(--s-7), 4vw, var(--s-10));
+  }
+  /* Two columns once there is room for a portrait that is worth showing.
+     Below that it becomes a small avatar above the name, which is the usual
+     mobile hero and keeps the name as the first thing that is read. */
+  @media (min-width: 60rem) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: clamp(2rem, 1rem + 4vw, 5rem);
+      align-items: center;
+    }
+  }
+
+  .hero__roles { margin-bottom: var(--s-5); }
+  .hero__name { margin-bottom: var(--s-6); max-width: 16ch; }
+  .hero__statement { margin-bottom: var(--s-8); }
+
+  .hero__portrait { order: -1; width: clamp(5rem, 18vw, 7rem); }
+  @media (min-width: 60rem) {
+    .hero__portrait { order: 0; width: clamp(13rem, 22vw, 20rem); }
+  }
+  .hero__portrait :global(img),
+  .hero__portrait :global(.placeholder) {
+    border: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: var(--shadow-card);
+  }
+
+  .hero__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-5) var(--s-6);
+  }
+
+  .hero__available {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    font-size: var(--t--1);
+    font-weight: var(--w-medium);
+    color: var(--ink-2);
+    padding: var(--s-2) var(--s-4) var(--s-2) var(--s-3);
+    border: 1.5px solid var(--rule-strong);
+    border-radius: var(--r-full);
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    flex: none;
+  }
+
+  .hero__actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+
+  /* ---- Section heads ---- */
+  .section-head__note {
+    margin-top: var(--s-4);
+    color: var(--ink-3);
+    max-width: 46ch;
+    text-wrap: pretty;
+  }
+
+  /* ---- Capabilities ---- */
+  .caps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+    border-top: 2px solid var(--ink);
+    padding-top: var(--s-7);
+  }
+  @media (min-width: 44rem) { .caps { grid-template-columns: repeat(2, 1fr); gap: var(--s-7); } }
+  @media (min-width: 64rem) { .caps { grid-template-columns: repeat(3, 1fr); } }
+
+  .cap__title { margin-bottom: var(--s-4); color: var(--ink); }
+  .cap__list { list-style: none; padding: 0; margin: 0; }
+  .cap__list li {
+    padding-block: var(--s-3);
+    border-top: 1px solid var(--rule);
+    font-size: var(--t--1);
+    line-height: var(--lh-relaxed);
+    color: var(--ink-2);
+  }
+
+  /* ---- CTA ---- */
+  .cta-section { border-top: 2px solid var(--ink); }
+  .cta__title { max-width: 14ch; margin-bottom: var(--s-7); }
+
+  .cta__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+  }
+  @media (min-width: 56rem) {
+    .cta__grid { grid-template-columns: 1fr auto; gap: var(--s-8); align-items: end; }
+  }
+  .cta__note { color: var(--ink-2); max-width: 42ch; text-wrap: pretty; }
+  .cta__links { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+</style>

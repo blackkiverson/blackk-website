@@ -1,0 +1,97 @@
+---
+import { site } from '../data/site';
+import { projects } from '../data/work';
+import Arrow from './Arrow.astro';
+const year = new Date().getFullYear();
+---
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__grid">
+      <div class="foot__col">
+        <h2 class="eyebrow">Contact</h2>
+        <ul class="foot__list">
+          <li><a class="arrow-link" href={`mailto:${site.email}`}>Email<Arrow /></a></li>
+          <li><a class="arrow-link" href="/cv.pdf">CV (PDF)<Arrow /></a></li>
+        </ul>
+      </div>
+
+      <div class="foot__col">
+        <h2 class="eyebrow">Follow</h2>
+        <ul class="foot__list">
+          <li>
+            <a class="arrow-link" href={site.socials[0].href} rel="me noopener">
+              LinkedIn<Arrow />
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="foot__col">
+        <h2 class="eyebrow">Case studies</h2>
+        <ul class="foot__list">
+          {projects.map((p) => (
+            <li><a class="arrow-link" href={`/work/${p.slug}`}>{p.name}<Arrow /></a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="foot__col foot__col--wide">
+        <h2 class="eyebrow">Colophon</h2>
+        <p class="foot__note">
+          Built with Astro and hand-written CSS. No UI framework, no CSS
+          framework, no client-side JavaScript beyond a theme toggle. Body copy
+          is capped at 65 characters per line, following
+          <a class="link" href="https://baymard.com/blog/line-length-readability"
+             rel="noopener">Baymard's line-length research</a>.
+        </p>
+      </div>
+    </div>
+
+    <p class="foot__legal">
+      <span>© {year} {site.name}</span>
+      <span aria-hidden="true">·</span>
+      <span>{site.location}</span>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    margin-top: auto;
+    padding-block: var(--s-8) var(--s-7);
+    border-top: 1px solid var(--rule);
+  }
+
+  .foot__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+  }
+  @media (min-width: 40rem) { .foot__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 68rem) {
+    .foot__grid { grid-template-columns: repeat(3, minmax(0, 0.7fr)) minmax(0, 1.3fr); gap: var(--s-7); }
+  }
+
+  .foot__col .eyebrow { margin-bottom: var(--s-4); }
+  .foot__list { list-style: none; padding: 0; margin: 0; }
+  .foot__list li + li { margin-top: calc(var(--s-2) * -1); }
+
+  .foot__note {
+    font-size: var(--t--1);
+    line-height: var(--lh-relaxed);
+    color: var(--ink-3);
+    max-width: 48ch;
+    text-wrap: pretty;
+  }
+
+  .foot__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin-top: var(--s-8);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--rule);
+    font-size: var(--t--1);
+    color: var(--ink-3);
+  }
+</style>

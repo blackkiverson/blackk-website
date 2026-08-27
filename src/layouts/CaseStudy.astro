@@ -1,0 +1,211 @@
+---
+import Base from './Base.astro';
+import Cover from '../components/Cover.astro';
+import Arrow from '../components/Arrow.astro';
+import { projects, getProject } from '../data/work';
+
+interface Props { slug: string }
+const { slug } = Astro.props;
+const p = getProject(slug);
+
+const i = projects.findIndex((x) => x.slug === slug);
+const next = projects[(i + 1) % projects.length];
+---
+<Base title={p.name} description={p.headline}>
+  <article class={`cs cs--${p.tint}`}>
+    <!-- ---- Header ---- -->
+    <header class="section section--top">
+      <div class="wrap">
+        <p class="crumb">
+          <a class="link" href="/#work">Work</a>
+          <span aria-hidden="true">/</span>
+          <span class="muted">{p.name}</span>
+        </p>
+
+        <p class="eyebrow eyebrow--muted cs__kicker">{p.kicker}</p>
+        <h1 class="h1 cs__title">{p.headline}</h1>
+        <p class="lead cs__lead">{p.summary}</p>
+      </div>
+    </header>
+
+    <!-- ---- Cover ---- -->
+    <div class="wrap">
+      <figure class="cs__cover">
+        <Cover src={p.cover} alt={p.coverAlt} ratio="16 / 9" loading="eager" />
+      </figure>
+    </div>
+
+    <!-- ---- Facts + evidence ---- -->
+    <section class="section" aria-label="Project details">
+      <div class="wrap">
+        <div class="facts">
+          <dl class="facts__list">
+            <div class="fact"><dt class="eyebrow eyebrow--muted">Role</dt><dd>{p.role}</dd></div>
+            <div class="fact"><dt class="eyebrow eyebrow--muted">Organisation</dt><dd>{p.org}</dd></div>
+            <div class="fact"><dt class="eyebrow eyebrow--muted">Period</dt><dd>{p.period}</dd></div>
+            {p.status && <div class="fact"><dt class="eyebrow eyebrow--muted">Status</dt><dd>{p.status}</dd></div>}
+            {p.links.length > 0 && (
+              <div class="fact">
+                <dt class="eyebrow eyebrow--muted">Live</dt>
+                <dd>
+                  {p.links.map((l) => (
+                    <a class="arrow-link" href={l.href} rel="noopener">{l.label}<Arrow /></a>
+                  ))}
+                </dd>
+              </div>
+            )}
+          </dl>
+
+          <div class="facts__stack">
+            <p class="eyebrow eyebrow--muted">Built with</p>
+            <ul class="chips">
+              {p.stack.map((s) => <li class="chip">{s}</li>)}
+            </ul>
+          </div>
+        </div>
+
+        {p.evidence.length > 0 && (
+          <div class="evidence evidence--band">
+            {p.evidence.map((e) => (
+              <div class="ev">
+                <p class="ev__value">{e.value}</p>
+                <p class="ev__label">{e.label}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- ---- Body ---- -->
+    <div class="wrap cs__body">
+      <slot />
+    </div>
+
+    <!-- ---- Next ---- -->
+    <nav class="section" aria-label="Next case study">
+      <div class="wrap">
+        <hr class="rule" />
+        <a class="next" href={`/work/${next.slug}`}>
+          <span class="eyebrow eyebrow--muted">Next</span>
+          <span class="next__title h3">{next.name}</span>
+          <span class="next__line">{next.kicker}</span>
+          <span class="next__arrow" aria-hidden="true"><Arrow size={18} /></span>
+        </a>
+      </div>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .cs--pink     { --tint: var(--tint-pink);     --tint-ink: var(--tint-ink-pink); }
+  .cs--mint     { --tint: var(--tint-mint);     --tint-ink: var(--tint-ink-mint); }
+  .cs--blue     { --tint: var(--tint-blue);     --tint-ink: var(--tint-ink-blue); }
+  .cs--lavender { --tint: var(--tint-lavender); --tint-ink: var(--tint-ink-lavender); }
+  .cs--rust     { --tint: var(--tint-rust);     --tint-ink: var(--tint-ink-rust); }
+
+  .crumb {
+    display: flex;
+    gap: var(--s-2);
+    font-size: var(--t-eyebrow);
+    font-weight: var(--w-bold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: var(--s-6);
+  }
+
+  .cs__kicker { color: var(--tint-ink); margin-bottom: var(--s-4); }
+  .cs__title { max-width: 20ch; margin-bottom: var(--s-5); }
+  .cs__lead { max-width: var(--measure); }
+
+  .cs__cover { margin-top: var(--s-7); }
+  .cs__cover :global(img),
+  .cs__cover :global(.placeholder) { border-radius: var(--r-xl); }
+
+  /* ---- Facts ---- */
+  .facts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+    padding-bottom: var(--s-7);
+  }
+  @media (min-width: 56rem) {
+    .facts { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: var(--s-8); }
+  }
+
+  .facts__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--s-5);
+    margin: 0;
+  }
+  .fact dt { margin-bottom: var(--s-2); color: var(--ink-3); }
+  .fact dd {
+    margin: 0;
+    font-size: var(--t--1);
+    font-weight: var(--w-medium);
+    line-height: var(--lh-relaxed);
+    color: var(--ink);
+  }
+  .fact dd :global(.arrow-link) { min-height: auto; font-size: var(--t--1); }
+
+  .facts__stack .eyebrow { margin-bottom: var(--s-3); color: var(--ink-3); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s-2); list-style: none; padding: 0; margin: 0; }
+  .chip {
+    font-size: var(--t--1);
+    font-weight: var(--w-medium);
+    line-height: 1.4;
+    color: var(--ink-2);
+    padding: 0.3em 0.75em;
+    border: 1.5px solid var(--rule);
+    border-radius: var(--r-full);
+  }
+
+  /* ---- Evidence band ---- */
+  .evidence--band {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: var(--s-6);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border-radius: var(--r-xl);
+    background: var(--tint);
+  }
+  .ev__value {
+    font-size: var(--t-4);
+    font-weight: var(--w-bold);
+    line-height: 1;
+    letter-spacing: var(--ls-tight);
+    color: var(--tint-ink);
+  }
+  .ev__label {
+    margin-top: var(--s-2);
+    font-size: var(--t--1);
+    line-height: 1.35;
+    color: var(--ink-2);
+    max-width: 20ch;
+  }
+
+  /* ---- Body ---- */
+  .cs__body { padding-bottom: var(--s-section); }
+
+  /* ---- Next ---- */
+  .next {
+    position: relative;
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-7) 0 var(--s-4);
+  }
+  .next .eyebrow { color: var(--ink-3); }
+  .next__title { color: var(--ink); transition: color var(--dur) var(--ease); }
+  .next:hover .next__title { color: var(--accent-ink); }
+  .next__line { font-size: var(--t--1); color: var(--ink-3); }
+  .next__arrow {
+    position: absolute;
+    right: 0;
+    top: var(--s-8);
+    color: var(--ink-3);
+    transition: transform var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .next:hover .next__arrow { color: var(--accent-ink); transform: translateX(4px); }
+</style>

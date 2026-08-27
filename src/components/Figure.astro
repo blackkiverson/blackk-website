@@ -1,0 +1,17 @@
+---
+import Cover from './Cover.astro';
+
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  ratio?: string;
+  label?: string;
+  fit?: 'cover' | 'contain';
+}
+const { src, alt, caption, ratio = '16 / 10', label, fit = 'cover' } = Astro.props;
+---
+<figure class="figure">
+  <Cover src={src} alt={alt} ratio={ratio} label={label} fit={fit} />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

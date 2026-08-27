@@ -1,0 +1,50 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+---
+<CaseStudy slug="hum">
+  <div class="prose">
+    <h2 class="h3">The problem</h2>
+    <p>
+      Design and code drift apart quietly. A colour gets nudged in Figma, a
+      developer hard-codes a hex value under deadline, and six weeks later nobody
+      can say which of the four greys is the real one. The cost does not show up
+      as a bug. It shows up as every future change taking longer than it should.
+    </p>
+
+    <h2 class="h3">What I owned</h2>
+    <ul>
+      <li>
+        <strong>Design tokens and theming architecture.</strong> One source of
+        truth for colour, type, spacing and elevation, shaped so a theme is a set
+        of token values rather than a fork of the components.
+      </li>
+      <li>
+        <strong>The code-side styling structure.</strong> Aligned so that the
+        names a designer uses in Figma are the names a developer reaches for in
+        the codebase. Translation is where drift enters, so I removed the
+        translation step.
+      </li>
+      <li>
+        <strong>Front-end development to roughly 60% completion</strong>, before
+        moving to a supervisory role while I picked up another project.
+      </li>
+      <li>
+        <strong>Handover review.</strong> I stayed on to check the developer who
+        took over implemented the requirements as intended, rather than treating
+        the handover document as the end of my involvement.
+      </li>
+    </ul>
+
+    <h2 class="h3">Where this stands</h2>
+    <p>
+      HUM is still in build, so there is no shipped outcome to point at yet. What
+      I would claim is narrower and true: the team worked from one token set
+      across design and code, and the theming architecture meant adding a theme
+      did not mean touching a component.
+    </p>
+    <p class="muted">
+      This page will be updated with screenshots and results when the product
+      ships.
+    </p>
+  </div>
+</CaseStudy>

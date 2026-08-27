@@ -1,0 +1,195 @@
+/* ==========================================================================
+   Design tokens
+   --------------------------------------------------------------------------
+   Palette, type and scale are matched to the reference site
+   (carolynnieberding.com): Satoshi throughout, bold uppercase headlines on
+   warm cream, charcoal text, crimson accent, and a pastel tint per project.
+
+   Measured off the reference:
+     name       60px / 700 / -2px tracking / #2f2f2f
+     headline   32px / 700 / uppercase / 0.15px tracking
+     eyebrow    14px / 700 / uppercase / 0.16em tracking
+     CTA        700 / white on dark
+
+   The measure rules come from Baymard: 50-75 characters is the readable band,
+   80 is the WCAG 1.4.8 ceiling. Body copy is set in `ch` so the measure
+   tracks the typeface rather than a guessed pixel width.
+
+   Every ink colour is annotated with its contrast against --paper. The
+   reference's own muted grey (#7f8080) only reaches 3.5:1, so it is kept for
+   large text and rules; --ink-3 is darkened to clear AA for body copy.
+   ========================================================================== */
+
+:root {
+  /* ---- Type families ---------------------------------------------------- */
+  --font-sans: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  /* ---- Type scale ------------------------------------------------------- */
+  --t-eyebrow: 0.875rem;                                  /* 14px, fixed     */
+  --t--1: clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem);   /* 13 -> 14        */
+  --t-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);          /* 16 -> 18  body  */
+  --t-1: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);    /* 18 -> 21        */
+  --t-2: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);        /* 20 -> 26  lead  */
+  --t-3: clamp(1.375rem, 1.15rem + 1.05vw, 2rem);         /* 22 -> 32  card  */
+  --t-4: clamp(1.625rem, 1.3rem + 1.5vw, 2.5rem);         /* 26 -> 40  sect  */
+  --t-5: clamp(2rem, 1.45rem + 2.6vw, 3.25rem);           /* 32 -> 52        */
+  --t-6: clamp(2.25rem, 1.4rem + 4.2vw, 3.75rem);         /* 36 -> 60  name  */
+
+  /* ---- Line height ------------------------------------------------------ */
+  --lh-display: 1.02;
+  --lh-tight: 1.1;
+  --lh-snug: 1.22;
+  --lh-body: 1.6;
+  --lh-relaxed: 1.7;
+
+  /* ---- Tracking --------------------------------------------------------- */
+  --ls-display: -0.033em;   /* the reference's -2px at 60px                  */
+  --ls-statement: -0.0625em; /* the reference's -2px at 32px                 */
+  --ls-headline: -0.01em;   /* sentence case at headline size wants negative  */
+  --ls-tight: -0.015em;
+  --ls-eyebrow: 0.16em;
+
+  /* ---- Weight ----------------------------------------------------------- */
+  --w-body: 400;
+  --w-medium: 500;
+  --w-bold: 700;
+  --w-black: 900;
+
+  /* ---- Measure (Baymard) ------------------------------------------------ */
+  --measure-display: 14ch;
+  --measure-headline: 24ch;
+  --measure-lead: 34ch;
+  --measure: 65ch;
+  --measure-wide: 76ch;
+
+  /* ---- Space (4px base) ------------------------------------------------- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+  --s-9: 6rem;
+  --s-10: 8rem;
+  --s-section: clamp(4rem, 2.5rem + 6.5vw, 8rem);
+  --card-gap: clamp(2rem, 1rem + 5vw, 7.5rem);      /* 32 -> 120  between     */
+  --card-pad: clamp(1.75rem, 1rem + 3.6vw, 5rem);   /* 28 -> 80   inside      */
+
+  /* ---- Layout ----------------------------------------------------------- */
+  --container: 75rem;
+  --container-tight: 48rem;
+  --gutter: clamp(1.25rem, 1rem + 3vw, 3.5rem);
+  --tap: 2.75rem;
+
+  /* ---- Radius & motion -------------------------------------------------- */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 16px;
+  --r-xl: 28px;
+  --r-full: 999px;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur: 180ms;
+  --dur-slow: 420ms;
+
+  /* ---- Colour: light ---------------------------------------------------- */
+  --paper: #f4f0eb;      /* the reference's warm cream                       */
+  --paper-2: #f9f6f2;
+  --paper-3: #e9e3da;
+  --ink: #2f2f2f;        /* 11.8:1 on --paper                                */
+  --ink-2: #505050;      /*  7.2:1                                           */
+  --ink-3: #676767;      /*  4.9:1  muted floor for body copy                */
+  --ink-faint: #7f8080;  /*  3.5:1  large text and rules only                */
+  --rule: rgb(47 47 47 / 0.14);
+  --rule-strong: rgb(47 47 47 / 0.32);
+  --accent: #dd295c;     /*  5.2:1                                           */
+  --accent-ink: #ad0053; /*  6.4:1  the reference's emphasis colour            */
+  --accent-soft: #fcebef;
+  --solid: #2f2f2f;      /* dark buttons, as on the reference                */
+  --on-solid: #ffffff;
+  --shadow: 0 1px 2px rgb(47 47 47 / 0.04), 0 12px 32px -16px rgb(47 47 47 / 0.2);
+  --shadow-card: 0 2px 4px rgb(47 47 47 / 0.04), 0 12px 28px -10px rgb(47 47 47 / 0.1);
+  --shadow-card-hover: 0 4px 8px rgb(47 47 47 / 0.06), 0 24px 48px -16px rgb(47 47 47 / 0.18);
+
+  /* ---- Project tints ---------------------------------------------------- */
+  --tint-pink: #fcd9ed;
+  --tint-mint: #d2e0ce;
+  --tint-blue: #dbe7f4;
+  --tint-lavender: #e1deff;
+  /* Sampled from the OutOut UI, which sits at hue 20-30. Tuned to the same
+     luminance as --tint-mint so it carries equal weight in the stack. */
+  --tint-rust: #f4d6c4;
+  --tint-ink-pink: #8f1739;
+  --tint-ink-mint: #103729;
+  --tint-ink-blue: #0a467a;
+  --tint-ink-lavender: #3d1375;
+  --tint-ink-rust: #6b2d0c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #1b1a18;
+    --paper-2: #24221f;
+    --paper-3: #2f2c28;
+    --ink: #f4f1ea;      /* 15.0:1 on --paper                                */
+    --ink-2: #cfc9bf;
+    --ink-3: #9a948a;    /*  5.7:1  muted floor                              */
+    --ink-faint: #7d786f;
+    --rule: rgb(244 241 234 / 0.14);
+    --rule-strong: rgb(244 241 234 / 0.3);
+    --accent: #ff6b90;   /*  6.6:1                                           */
+    --accent-ink: #ff6b90;
+    --accent-soft: #2e1a21;
+    --solid: #f4f1ea;
+    --on-solid: #1b1a18;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.8);
+  --shadow-card: 0 2px 4px rgb(0 0 0 / 0.3), 0 12px 28px -10px rgb(0 0 0 / 0.5);
+  --shadow-card-hover: 0 4px 8px rgb(0 0 0 / 0.4), 0 24px 48px -16px rgb(0 0 0 / 0.7);
+
+    --tint-pink: #2b1a20;
+    --tint-mint: #15241a;
+    --tint-blue: #15212e;
+    --tint-lavender: #201d33;
+    --tint-rust: #2a1912;
+    --tint-ink-pink: #ffb3c6;
+    --tint-ink-mint: #a8ddc0;
+    --tint-ink-blue: #a9cdf0;
+    --tint-ink-lavender: #cfc4f5;
+    --tint-ink-rust: #f0b087;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #1b1a18;
+  --paper-2: #24221f;
+  --paper-3: #2f2c28;
+  --ink: #f4f1ea;
+  --ink-2: #cfc9bf;
+  --ink-3: #9a948a;
+  --ink-faint: #7d786f;
+  --rule: rgb(244 241 234 / 0.14);
+  --rule-strong: rgb(244 241 234 / 0.3);
+  --accent: #ff6b90;
+  --accent-ink: #ff6b90;
+  --accent-soft: #2e1a21;
+  --solid: #f4f1ea;
+  --on-solid: #1b1a18;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.8);
+  --shadow-card: 0 2px 4px rgb(0 0 0 / 0.3), 0 12px 28px -10px rgb(0 0 0 / 0.5);
+  --shadow-card-hover: 0 4px 8px rgb(0 0 0 / 0.4), 0 24px 48px -16px rgb(0 0 0 / 0.7);
+
+  --tint-pink: #2b1a20;
+  --tint-mint: #15241a;
+  --tint-blue: #15212e;
+  --tint-lavender: #201d33;
+  --tint-rust: #2a1912;
+  --tint-ink-pink: #ffb3c6;
+  --tint-ink-mint: #a8ddc0;
+  --tint-ink-blue: #a9cdf0;
+  --tint-ink-lavender: #cfc4f5;
+  --tint-ink-rust: #f0b087;
+}

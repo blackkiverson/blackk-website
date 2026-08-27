@@ -1,0 +1,33 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# original full-size screenshots (kept locally, WebP versions are deployed)
+# comment this out if you want the originals in version control
+assets-src/
+
+# internal working documents, kept on Desktop, never in a public repo
+CONTENT-NOTES.md
+METRICS-PROMPT.md
+*_INTERNAL.md

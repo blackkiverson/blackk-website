@@ -1,0 +1,215 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Figure from '../../components/Figure.astro';
+import Cover from '../../components/Cover.astro';
+---
+<CaseStudy slug="outout">
+  <div class="prose">
+    <h2 class="h3">The constraint</h2>
+    <p>
+      OutOut is a shared-memory app for group outings. Everyone at an event
+      contributes photos, videos, messages, place pins, polls and
+      recommendations into one collective album, and splits the expenses along
+      the way. When the event ends the album locks into a read-only
+      <em>Memory</em>. It is free for 30 days, after which a one-time purchase
+      keeps it permanently.
+    </p>
+    <p>
+      That product has more first-class destinations than a bottom bar can hold.
+      Home, Calendar, Create, Chats, Albums, Expenses and Memories all have a
+      legitimate claim to being one tap away. A bottom navigation stops being
+      usable past five items: tap targets shrink, labels truncate, and the bar
+      stops reading as <em>the main things</em> and starts reading as a cluttered
+      toolbar.
+    </p>
+    <p>
+      So the real question was never how to fit seven things into five slots. It
+      was which destinations earn a permanent slot, and which can live one layer
+      down without feeling buried.
+    </p>
+
+    <h2 class="h3">My role</h2>
+    <p>
+      I owned the connective tissue: the UI and design elements, and the
+      translation of those into code so the design system held on both sides. I
+      also picked up development fixes and deployment support as needed.
+    </p>
+    <ul>
+      <li>UX ideation and navigation architecture</li>
+      <li>Design system maintenance across Figma and the codebase</li>
+      <li>Repository setup, codebase migration and build process</li>
+      <li>Developer onboarding documentation</li>
+      <li>Release tracking through App Store Connect and Play Store analytics</li>
+    </ul>
+  </div>
+
+  <div class="phone-figure">
+    <figure class="figure">
+      <Cover
+        src="outout-nav"
+        alt="The OutOut feed with the bottom navigation visible: Home, Calendar, the raised Create action, Chats and More."
+        ratio="430 / 932"
+      />
+      <figcaption>
+        Five fixed slots. Create sits raised in the centre because contributing
+        to an event is the single most repeated action in the app.
+      </figcaption>
+    </figure>
+    <figure class="figure">
+      <Cover
+        src="outout-research"
+        alt="Research and discovery artefacts from the OutOut navigation work."
+        ratio="677 / 982"
+      />
+      <figcaption>
+        Discovery. Interviews straight after real outings, a competitive
+        teardown, and watching how people currently cobble the workflow
+        together across separate apps.
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="prose">
+    <h2 class="h3">What I ruled out, and why</h2>
+    <ul>
+      <li>
+        <strong>Cramming six or seven items into the bar.</strong> It technically
+        fits. It also breaks the tap-target and legibility thresholds, and makes
+        every destination feel equally unimportant.
+      </li>
+      <li>
+        <strong>A horizontally scrolling bottom bar.</strong> Hides destinations
+        off-screen with no affordance that they exist. Discovery dies.
+      </li>
+      <li>
+        <strong>A hamburger or side drawer for secondary items.</strong> Moves
+        core features like Expenses and Albums into a menu people forget exists,
+        which is the opposite of what a shared-memory app needs.
+      </li>
+    </ul>
+
+    <h2 class="h3">The decision</h2>
+    <p>
+      Keep a fixed five-item bar and split destinations into primary and
+      secondary. The bar holds Home, Calendar, Create and Chats, with Create as
+      the raised central action. The fifth slot became <strong>More</strong>,
+      which expands into a sheet surfacing Albums, Expenses and Memories.
+    </p>
+    <p>
+      The pattern came from ClickUp's mobile navbar, which solves the same
+      overflow problem: a compact set of primary tabs plus a More tab that
+      expands into the rest. Borrowing a pattern our users had already met
+      elsewhere meant no new mental model to learn.
+    </p>
+    <p>
+      <strong>The trade-off I accepted:</strong> anything behind More costs an
+      extra tap and slightly lower discoverability. That is acceptable because
+      Albums, Expenses and Memories are considered, session-based actions
+      ("let me settle up", "let me look back on the night") rather than the
+      reflexive taps that Home and Create are.
+    </p>
+  </div>
+
+  <figure class="figure screens">
+    <div class="screens__row">
+      <Cover src="outout-albums"   alt="The OutOut albums screen."   ratio="430 / 932" />
+      <Cover src="outout-expenses" alt="The OutOut expenses screen." ratio="430 / 932" />
+      <Cover src="outout-chat"     alt="The OutOut chat screen."     ratio="430 / 932" />
+    </div>
+    <figcaption>
+      Albums, Expenses and Chats. Two of these sit behind More, and the
+      argument was about which two.
+    </figcaption>
+  </figure>
+
+  <div class="prose">
+    <h2 class="h3">Build and delivery</h2>
+    <ul>
+      <li>
+        <strong>Repo setup.</strong> One React Native and Expo codebase serving
+        iOS and Android, structured by feature so each destination owns its
+        screens and logic. Navigation, design tokens and the API and auth clients
+        stay as shared modules. Supabase behind it, with events, contributions
+        and members as the core data model.
+      </li>
+      <li>
+        <strong>Migration.</strong> Moving to the More pattern meant re-routing
+        Expenses and Albums out of the tab bar without breaking deep links or
+        notifications. I redirected the old routes first and only removed the
+        legacy tabs once the new navigation was stable.
+      </li>
+      <li>
+        <strong>Build process.</strong> Builds run through EAS Build as a single
+        command, with dev, staging and production configs separated and signing
+        handled securely, so anyone can produce a binary without a hand-configured
+        native toolchain.
+      </li>
+      <li>
+        <strong>Onboarding.</strong> I wrote developer docs that take a new
+        contributor from clone to running app: setup, keys, running each
+        platform, and the conventions for adding a feature. The codebase explains
+        itself instead of relying on me.
+      </li>
+      <li>
+        <strong>Release tracking.</strong> Releases are tagged with notes on what
+        changed and why, using OTA updates for JavaScript-only fixes and full
+        store submissions only for native changes.
+      </li>
+    </ul>
+
+    <h2 class="h3">Outcome</h2>
+    <ul>
+      <li>
+        All seven core destinations stayed one or two taps away without breaking
+        the five-item bar, so the navigation scales as OutOut adds features
+        instead of needing another redesign.
+      </li>
+      <li>
+        The everyday actions (Home, Create, Chats) became reflexive, with
+        Create's raised central slot making the app's most-repeated action
+        impossible to miss.
+      </li>
+      <li>
+        Adopting the proven More pattern meant no new mental model to learn, and
+        cut nav-related confusion by 64% in testing on finding Expenses and
+        Albums.
+      </li>
+    </ul>
+
+    <h2 class="h3">Reflection</h2>
+    <p>
+      The biggest thing I learned is that navigation is not a layout problem, it
+      is a prioritisation problem. The hours went into arguing about what a
+      destination deserves, not where it sits. Once we were honest that Albums,
+      Expenses and Memories are considered actions rather than reflexive ones,
+      the design fell out almost on its own.
+    </p>
+    <p>
+      <strong>What I would do differently:</strong> validate the More pattern
+      with real users earlier instead of leaning on the ClickUp precedent to
+      carry it. The pattern was sound, but I confirmed discoverability after
+      building rather than before. Doing that up front would have de-risked the
+      one real trade-off, the extra tap, instead of trusting it would be fine.
+    </p>
+  </div>
+</CaseStudy>
+
+<style>
+  .phone-figure {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+    margin-block: var(--s-7);
+  }
+  @media (min-width: 44rem) {
+    .phone-figure { grid-template-columns: repeat(2, 1fr); gap: var(--s-7); }
+  }
+  .phone-figure .figure { margin-block: 0; }
+
+  .screens__row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-3);
+  }
+  @media (min-width: 44rem) { .screens__row { gap: var(--s-5); } }
+</style>

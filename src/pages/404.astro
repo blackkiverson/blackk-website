@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Arrow from '../components/Arrow.astro';
+---
+<Base title="Page not found" description="That page does not exist.">
+  <section class="section section--top">
+    <div class="wrap nf">
+      <p class="eyebrow eyebrow--muted">404</p>
+      <h1 class="display">Page not found</h1>
+      <p class="lead">
+        That page does not exist. The link may be out of date, or the page may
+        have moved.
+      </p>
+      <p class="nf__links">
+        <a class="arrow-link" href="/">Home<Arrow /></a>
+        <a class="arrow-link" href="/#work">Work<Arrow /></a>
+        <a class="arrow-link" href="/about">About<Arrow /></a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { padding-block: var(--s-9); }
+  .nf .eyebrow { margin-bottom: var(--s-4); }
+  .nf .display { margin-bottom: var(--s-5); }
+  .nf__links { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-6); margin-top: var(--s-6); }
+</style>

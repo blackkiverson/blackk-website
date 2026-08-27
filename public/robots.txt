@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://blackk.website/sitemap-index.xml
