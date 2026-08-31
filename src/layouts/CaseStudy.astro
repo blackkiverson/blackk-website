@@ -25,6 +25,23 @@ const next = projects[(i + 1) % projects.length];
         <p class="eyebrow eyebrow--muted cs__kicker">{p.kicker}</p>
         <h1 class="h1 cs__title">{p.headline}</h1>
         <p class="lead cs__lead">{p.summary}</p>
+
+        {p.links.length > 0 && (
+          <p class="cs__links">
+            {p.links.map((l, n) => (
+              <a
+                class:list={['btn', n === 0 ? 'btn--live' : 'btn--ghost']}
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {n === 0 ? `Visit ${l.label}` : l.label}
+                <span class="sr-only"> (opens in a new tab)</span>
+                <Arrow />
+              </a>
+            ))}
+          </p>
+        )}
       </div>
     </header>
 
@@ -44,16 +61,6 @@ const next = projects[(i + 1) % projects.length];
             <div class="fact"><dt class="eyebrow eyebrow--muted">Organisation</dt><dd>{p.org}</dd></div>
             <div class="fact"><dt class="eyebrow eyebrow--muted">Period</dt><dd>{p.period}</dd></div>
             {p.status && <div class="fact"><dt class="eyebrow eyebrow--muted">Status</dt><dd>{p.status}</dd></div>}
-            {p.links.length > 0 && (
-              <div class="fact">
-                <dt class="eyebrow eyebrow--muted">Live</dt>
-                <dd>
-                  {p.links.map((l) => (
-                    <a class="arrow-link" href={l.href} rel="noopener">{l.label}<Arrow /></a>
-                  ))}
-                </dd>
-              </div>
-            )}
           </dl>
 
           <div class="facts__stack">
@@ -119,6 +126,20 @@ const next = projects[(i + 1) % projects.length];
   .cs__title { max-width: 20ch; margin-bottom: var(--s-5); }
   .cs__lead { max-width: var(--measure); }
 
+  /* The live link carries the project's own colour rather than the site accent,
+     so it reads as part of this case study and not as generic site chrome.
+     Every tint-ink clears 8.9:1 against --on-solid in both themes, and 7.8:1
+     against --paper for the button's own edge. Hover falls back to --solid:
+     the accent would drop the tie to the project. */
+  .cs__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+  }
+  .btn--live { background: var(--tint-ink); }
+  .btn--live:hover { background: var(--solid); }
+
   .cs__cover { margin-top: var(--s-7); }
   .cs__cover :global(img),
   .cs__cover :global(.placeholder) { border-radius: var(--r-xl); }
@@ -148,7 +169,6 @@ const next = projects[(i + 1) % projects.length];
     line-height: var(--lh-relaxed);
     color: var(--ink);
   }
-  .fact dd :global(.arrow-link) { min-height: auto; font-size: var(--t--1); }
 
   .facts__stack .eyebrow { margin-bottom: var(--s-3); color: var(--ink-3); }
   .chips { display: flex; flex-wrap: wrap; gap: var(--s-2); list-style: none; padding: 0; margin: 0; }
