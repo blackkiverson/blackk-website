@@ -128,12 +128,10 @@ export const education = [
   {
     qualification: 'MSc, Information Technology (Cyber Security)',
     institution: 'University of Luzon',
-    period: 'Aug 2024–Oct 2025',
   },
   {
     qualification: 'BSc, Software Engineering',
     institution: 'American University of Nigeria',
-    period: 'Aug 2018–Dec 2022',
   },
 ];
 
