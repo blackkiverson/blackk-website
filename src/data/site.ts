@@ -84,7 +84,7 @@ export const experience: Role[] = [
     title: 'Part-time Coding Instructor',
     org: 'Algorithmika, Mauritius',
     period: '2023',
-    mode: 'Remote',
+    mode: 'Hybrid',
     points: [
       'Taught programming fundamentals and game development to children aged 8–12, designing tailored curricula and mentoring one to one.',
     ],
