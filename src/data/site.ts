@@ -39,12 +39,13 @@ export const experience: Role[] = [
     title: 'Product Designer & Frontend Developer',
     org: 'AIENAI',
     href: 'https://www.aienai.co',
-    period: 'Sep 2024–present',
+    period: 'Dec 2023–present',
     mode: 'Remote',
     points: [
       'Lead design and frontend delivery for in-house and client products, pairing product design with AI-assisted, design-to-code workflows.',
       'Build mobile and web applications in React Native, TypeScript and Tailwind CSS, improving usability across internal tools.',
       'Apply agentic tooling such as Figma MCP to shorten the design-to-build loop, working cross-functionally to lift product adoption.',
+      'Began on frontend, building internal tools in React Native and Tailwind CSS to streamline team workflows, before taking on product design.',
     ],
   },
   {
@@ -78,14 +79,6 @@ export const experience: Role[] = [
       'Led a full website redesign, running user research and usability testing to find the pain points worth fixing.',
       'Delivered wireframes, prototypes and high-fidelity designs, holding design-system consistency through to launch.',
     ],
-  },
-  {
-    title: 'Frontend Developer',
-    org: 'AIENAI',
-    href: 'https://www.aienai.co',
-    period: 'Dec 2023–Jun 2024',
-    mode: 'Remote',
-    points: ['Developed internal tools in React Native and Tailwind CSS to streamline team workflows.'],
   },
   {
     title: 'Part-time Coding Instructor',
