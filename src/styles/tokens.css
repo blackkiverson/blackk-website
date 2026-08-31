@@ -109,6 +109,10 @@
   --accent: #dd295c;     /*  5.2:1                                           */
   --accent-ink: #ad0053; /*  6.4:1  the reference's emphasis colour            */
   --accent-soft: #fcebef;
+
+  /* Background sketches. Decoration only: never sits behind body copy, where
+     even a 5% wash drops --ink-3 below 4.5:1 on --paper. */
+  --sketch-ink: rgb(47 47 47 / 0.13);
   --solid: #2f2f2f;      /* dark buttons, as on the reference                */
   --on-solid: #ffffff;
   --shadow: 0 1px 2px rgb(47 47 47 / 0.04), 0 12px 32px -16px rgb(47 47 47 / 0.2);
@@ -144,6 +148,7 @@
     --accent: #ff6b90;   /*  6.6:1                                           */
     --accent-ink: #ff6b90;
     --accent-soft: #2e1a21;
+    --sketch-ink: rgb(244 241 234 / 0.11);
     --solid: #f4f1ea;
     --on-solid: #1b1a18;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.8);
@@ -176,6 +181,7 @@
   --accent: #ff6b90;
   --accent-ink: #ff6b90;
   --accent-soft: #2e1a21;
+  --sketch-ink: rgb(244 241 234 / 0.11);
   --solid: #f4f1ea;
   --on-solid: #1b1a18;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.8);

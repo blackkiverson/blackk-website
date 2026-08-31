@@ -3,12 +3,14 @@ import Base from '../layouts/Base.astro';
 import WorkRow from '../components/WorkRow.astro';
 import Arrow from '../components/Arrow.astro';
 import Cover from '../components/Cover.astro';
+import Sketch from '../components/Sketch.astro';
 import { featured } from '../data/work';
 import { site, capabilities } from '../data/site';
 ---
 <Base>
   <!-- ================= Hero ================= -->
-  <section class="section section--top">
+  <section class="section section--top hero-section">
+    <Sketch trigger="load" class="hero-sketch" duration={3.2} delay={0.4} weight={0.5} />
     <div class="wrap hero">
       <div class="hero__text">
         <p class="eyebrow eyebrow--muted hero__roles">{site.roles.join(' · ')}</p>
@@ -105,6 +107,34 @@ import { site, capabilities } from '../data/site';
 </Base>
 
 <style>
+  /* ---- Background sketch ----
+     Sized past the section on every side so the gesture reaches the corners.
+     `isolation` keeps it behind the section's own content without needing a
+     stacking rule on every child. It is hidden on the single-column layout,
+     where the hero is too tight to carry a mark this size. */
+  .hero-section { position: relative; isolation: isolate; }
+  .hero-section > .wrap { position: relative; z-index: 1; }
+
+  .hero-section :global(.hero-sketch) { display: none; }
+  @media (min-width: 60rem) {
+    .hero-section :global(.hero-sketch) {
+      display: block;
+      --sketch-size: 112%;
+      --sketch-inset: -43% auto auto -8%;
+      /* The left and right edges are the sides of the window, so a hard cut
+         there is invisible. The bottom is not: the page carries on below it,
+         which reads as the drawing having been sliced. So that edge is
+         feathered and the stroke dissolves into the page instead. */
+      --sketch-edge: linear-gradient(to top, transparent 0, #000 30%);
+      /* Clears the top-left, where the --ink-3 eyebrow sits. */
+      --sketch-mask: radial-gradient(
+        68% 46% at 0% 0%,
+        transparent 0 62%,
+        #000 108%
+      );
+    }
+  }
+
   /* ---- Hero ---- */
   .hero {
     display: grid;

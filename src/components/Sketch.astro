@@ -1,0 +1,200 @@
+---
+/**
+ * A hand-drawn gesture sitting behind the content, drawn on as if by hand.
+ *
+ * The stroke is revealed with `stroke-dashoffset` against `pathLength="1"`, so
+ * the timing is the same whatever the path's real length is and there is no
+ * measured constant to keep in sync with the artwork.
+ *
+ * Two triggers:
+ *   - `load`  draws once, shortly after the page arrives. For the first screen.
+ *   - `view`  draws as the sketch is scrolled through, using a view timeline.
+ *             Browsers without scroll-driven animations get the finished
+ *             stroke rather than a blank space, so nothing is ever missing.
+ *
+ * It stands down the same way the cursor orb does:
+ *   - `prefers-reduced-motion` gets the finished stroke and no animation;
+ *   - `forced-colors` removes it entirely, rather than adding a stray line to
+ *     a palette the OS is controlling.
+ * It is `aria-hidden` and `pointer-events: none`, so it is invisible to
+ * assistive technology and can never intercept a click.
+ *
+ * Placement rule: keep it out from under body copy. `--ink-3` is the muted
+ * floor at 4.9:1, and even a 5% wash under it drops the pair below 4.5:1.
+ * Margins, bleeds and areas holding only display-size text are fair game.
+ */
+import { sketches, type SketchName } from '../data/sketches';
+
+interface Props {
+  name?: SketchName;
+  trigger?: 'load' | 'view';
+  /** Seconds. `view` is driven by scroll position, so it ignores both of these. */
+  duration?: number;
+  delay?: number;
+  /** Mirrored horizontally, so one gesture can read as two different marks. */
+  flip?: boolean;
+  /** Degrees. */
+  rotate?: number;
+  /** Multiplies the stroke weights. Scale it down as the sketch scales up, so
+      a large mark keeps a pen line rather than turning into a marker. */
+  weight?: number;
+  class?: string;
+}
+
+const {
+  name = 'loop',
+  trigger = 'view',
+  duration = 2.4,
+  delay = 0.35,
+  flip = false,
+  rotate = 0,
+  weight = 1,
+  class: className,
+} = Astro.props;
+
+const art = sketches[name];
+const [px, py] = art.pivot;
+
+/* Safari does not derive an intrinsic height from the viewBox when `height` is
+   auto, so the ratio is stated rather than inferred. Without it the svg
+   collapses and the sketch disappears. */
+const [, , vbW, vbH] = art.viewBox.split(/\s+/).map(Number);
+
+/* Three passes over the same gesture, fanned by a fraction of a degree about
+   the pivot. Rotation rather than translation because over-drawing a long
+   curve diverges in the middle and meets again at the ends, which is what a
+   rotation does and a translation does not. */
+const passes = [
+  { rot: 0, width: 3.4, opacity: 1 },
+  { rot: 0.55, width: 2.1, opacity: 0.66 },
+  { rot: -0.42, width: 1.5, opacity: 0.5 },
+];
+
+const transform = [
+  flip ? 'scale(-1, 1)' : '',
+  rotate ? `rotate(${rotate})` : '',
+].filter(Boolean).join(' ');
+---
+
+<span class:list={['sketch', `sketch--${trigger}`, className]} aria-hidden="true">
+  <svg
+    class="sketch__svg"
+    viewBox={art.viewBox}
+    fill="none"
+    focusable="false"
+    preserveAspectRatio="xMidYMid meet"
+    style={`--sketch-dur: ${duration}s; --sketch-delay: ${delay}s;` +
+      ` aspect-ratio: ${vbW} / ${vbH};` +
+      (transform ? ` transform: ${transform};` : '')}
+  >
+    {passes.map((p, i) => (
+      <path
+        class="sketch__pass"
+        d={art.d}
+        pathLength="1"
+        stroke="currentColor"
+        stroke-width={+(p.width * weight).toFixed(2)}
+        stroke-linecap="round"
+        stroke-opacity={p.opacity}
+        transform={p.rot ? `rotate(${p.rot} ${px} ${py})` : undefined}
+        style={`--pass: ${i};`}
+      />
+    ))}
+  </svg>
+</span>
+
+<style>
+  .sketch {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: clip;          /* the artwork bleeds; the page must not scroll */
+    pointer-events: none;    /* must never eat a click or block a hover */
+    z-index: 0;
+    color: var(--sketch-ink);
+
+    /* Two mask layers, both defaulting to opaque so a placement can set either
+       one alone:
+         --sketch-edge  feathers an edge where the clip would otherwise slice
+                        the stroke. Needed on any edge that meets more page
+                        rather than the side of the window.
+         --sketch-mask  clears a region the mark must stay off, which is how
+                        small muted text keeps its contrast.
+       They are intersected, so whichever is more transparent at a given point
+       wins. Without `mask-composite` the layers would add instead, which only
+       ever reveals more, so the second layer is held back until it is
+       supported rather than risking a sketch that masks itself away. */
+    --sketch-edge: linear-gradient(#000, #000);
+    --sketch-mask: linear-gradient(#000, #000);
+    mask-image: var(--sketch-edge);
+  }
+
+  @supports (mask-composite: intersect) {
+    .sketch {
+      mask-image: var(--sketch-edge), var(--sketch-mask);
+      mask-composite: intersect;
+    }
+  }
+
+  .sketch__svg {
+    position: absolute;
+    inset: var(--sketch-inset, 0 auto auto 0);
+    width: var(--sketch-size, 100%);
+    height: auto;
+    max-width: none;         /* the global reset clamps svg to 100%; this bleeds */
+    overflow: visible;
+  }
+
+  .sketch__pass {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  @keyframes sketch-draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* ---- Draw on arrival ---- */
+  .sketch--load .sketch__pass {
+    animation: sketch-draw var(--sketch-dur) cubic-bezier(0.32, 0, 0.15, 1)
+      calc(var(--sketch-delay) + var(--pass) * 0.28s) both;
+  }
+
+  /* ---- Draw on scroll ----
+     The default here is the finished stroke, so a browser without scroll-driven
+     animations shows the sketch instead of nothing. The timeline is layered on
+     top only where it is supported. */
+  .sketch--view .sketch__pass { stroke-dashoffset: 0; }
+
+  @supports (animation-timeline: view()) {
+    .sketch--view .sketch__pass {
+      stroke-dashoffset: 1;
+      /* Longhands, not the shorthand: `animation` resets `animation-timeline`
+         and `animation-duration`, and a scroll-driven animation needs
+         `duration: auto` to span its range rather than the shorthand's 0s. */
+      animation-name: sketch-draw;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry calc(4% + var(--pass) * 6%) cover 46%;
+    }
+  }
+
+  /* Reduced motion gets the finished stroke: the mark is the point, the
+     drawing of it is the flourish. Stated here rather than left to the global
+     duration override, which a scroll timeline would ignore. */
+  @media (prefers-reduced-motion: reduce) {
+    .sketch__pass,
+    .sketch--view .sketch__pass,
+    .sketch--load .sketch__pass {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* The OS is controlling presentation; do not add to it. */
+  @media (forced-colors: active) {
+    .sketch { display: none; }
+  }
+</style>
