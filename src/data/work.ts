@@ -118,9 +118,11 @@ export const projects: Project[] = [
     period: '2025',
     status: 'Shipped',
     evidence: [
-      { value: '64%', label: 'Less nav-related confusion in testing', tier: 'behaviour' },
       { value: '7 → 5', label: 'Destinations held in a five-slot bar', tier: 'craft' },
-      { value: 'App Store', label: 'Shipped and tracked post-release', tier: 'output' },
+      { value: '43x', label: 'Faster admin analytics snapshot, 2.05s to 47ms, byte-identical output', tier: 'craft' },
+      { value: '96%', label: 'Less image data on a cold grid load, 103.4 MB to 4.2 MB', tier: 'craft' },
+      { value: '0 → 85%', label: 'CI green rate, month on month', tier: 'output' },
+      { value: '42 of 43', label: 'Analytics events verified firing from real call sites', tier: 'output' },
     ],
     stack: ['Flutter', 'Supabase', 'EAS Build', 'App Store Connect'],
     links: [{ label: 'outout.app', href: 'https://outout.app/' }],
