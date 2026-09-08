@@ -38,8 +38,12 @@ export interface Project {
   kicker: string;
   /** Outcome-led. This is the line that has to earn the click. */
   headline: string;
-  /** Two or three sentences of context for the index row. */
+  /** Two or three sentences of context. Opens the case study. */
   summary: string;
+  /** The index card's hover description. Sized to two or three lines at the
+   *  card's column width, which is roughly 150 characters. The long version
+   *  lives in `summary`. */
+  blurb: string;
   role: string;
   org: string;
   period: string;
@@ -64,6 +68,8 @@ export const projects: Project[] = [
       '₦1.31M in tickets processed, on a platform I shipped alone.',
     summary:
       'Confety is an event-ticketing platform I founded and lead, built for the Nigerian events market. Attendees discover and book events; organisers sell tickets and verify them at the door with signed QR codes. I own the product, the codebase and the release pipeline across the App Store, Play Store and web, and wrote 387 of its 394 commits.',
+    blurb:
+      'An event-ticketing platform I founded and lead for the Nigerian market. I own the product, the codebase and the release pipeline.',
     role: 'Founder & Lead Developer',
     org: 'Confety',
     period: 'Jan 2026–present',
@@ -113,6 +119,8 @@ export const projects: Project[] = [
       'Seven destinations, five slots, none of them buried.',
     summary:
       'OutOut is a shared-memory app for group outings: everyone at an event contributes photos, messages, place pins and expenses into one collective album that locks into a read-only "Memory" when the night ends. The navigation had more legitimate destinations than a bottom bar can physically hold. I treated it as a prioritisation problem rather than a layout one.',
+    blurb:
+      'A shared-memory app for group outings. It had more legitimate destinations than a bottom bar can hold, so I treated it as a prioritisation problem.',
     role: 'UX & design systems, build and release',
     org: 'AIENAI',
     period: '2025',
@@ -139,6 +147,8 @@ export const projects: Project[] = [
       'Caught a grading queue overstating staff workload 9×.',
     summary:
       'AXE is the web platform behind AIENAI\'s two-week AI and design bootcamp, taking learners aged 13–19 from zero to a finished app prototype, a live pitch and a verifiable certificate. It serves three roles, Student, Tutor and Org, each a distinct experience from a single Next.js app. I lead development and wrote 280 of its 300 commits across 605 files.',
+    blurb:
+      'The web platform behind a two-week AI and design bootcamp for 13–19s. Three roles, Student, Tutor and Org, from a single Next.js app.',
     role: 'Lead Developer & UX Designer',
     org: 'AIENAI (AXE Academy)',
     period: '2025–present',
@@ -190,6 +200,8 @@ export const projects: Project[] = [
       'One token set, so design and code stopped drifting.',
     summary:
       'HUM is where I owned the design system end to end: tokens, theming architecture, and the code-side styling structure the rest of the team built against. I took the front end to roughly 60% before moving to a supervisory role, reviewing the handover developer\'s work against the original requirements.',
+    blurb:
+      'I owned the design system end to end: tokens, theming architecture and the styling structure the rest of the team built against.',
     role: 'Design System Owner',
     org: 'AIENAI',
     period: '2025',

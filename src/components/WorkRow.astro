@@ -27,7 +27,7 @@ const flip = index % 2 === 1;
       <h3 class="h3 card__title">{p.headline}</h3>
 
       <div class="card__reveal">
-        <p class="card__summary">{p.summary}</p>
+        <p class="card__summary">{p.blurb}</p>
       </div>
 
       {shown.length > 0 && (
@@ -108,9 +108,12 @@ const flip = index % 2 === 1;
 
   .card__kicker { color: var(--ink); }
 
+  /* Wide enough that the longest headline (59 characters) balances onto two
+     lines rather than three. The body column is the real constraint above
+     52rem; the cap only bites in a wider container. */
   .card__title {
     color: var(--ink);
-    max-width: 22ch;
+    max-width: 30ch;
     transition: color var(--dur) var(--ease);
   }
   .card:hover .card__title { color: var(--tint-ink); }
@@ -154,10 +157,13 @@ const flip = index % 2 === 1;
   }
 
   /* ---- Stats ---- */
+  /* Two even columns rather than shrink-to-fit flex items, so every label
+     gets the same half-column to wrap into. auto-fit drops to one column
+     below roughly 26rem of body width, which is where two would crush. */
   .stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-4) var(--s-6);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--s-5) var(--s-6);
     margin: 0;
     padding-block: var(--s-2);
   }
@@ -175,7 +181,9 @@ const flip = index % 2 === 1;
     font-size: var(--t--1);
     line-height: 1.3;
     color: var(--ink-2);
-    max-width: 18ch;
+    /* Fills the grid cell, so the typical label runs to two lines. The cap is
+       only a backstop for a single-column card. */
+    max-width: 34ch;
   }
 
   .card__cta { margin-top: var(--s-6); align-self: flex-start; }
